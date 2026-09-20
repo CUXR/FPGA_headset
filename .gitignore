@@ -1,2 +1,6 @@
-.pytest_cache/
 .vscode
+.DS_Store
+
+__pycache__/
+.pytest_cache/
+python/output/

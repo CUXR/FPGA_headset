@@ -67,13 +67,19 @@ else
         --quiet >/dev/null 2>&1
 fi
 
-# Prevent Conda from modifying the shell prompt.
-conda config --set changeps1 false >/dev/null
+# Prevent Conda from modifying the shell prompt for this shell only.
+export CONDA_CHANGEPS1=false
 
 conda activate "$ENV_NAME" || {
     echo "Error: Failed to activate Conda environment '$ENV_NAME'." >&2
     return 1
 }
+
+# pyenv may have added its shims ahead of Conda's existing PATH entry. Conda
+# then replaces that entry in place during activation, leaving pyenv's Python
+# as the default. Explicitly put the activated environment first.
+export PATH="${CONDA_PREFIX}/bin:${PATH}"
+hash -r
 
 echo "Activated Conda environment '$ENV_NAME'."
 
@@ -94,12 +100,12 @@ pytest() (
         return 1
     fi
 
-    cd "$PROJ_BASE" || {
-        echo "Error: Could not enter '$PROJ_BASE'." >&2
+    cd "$PROJ_BASE/python" || {
+        echo "Error: Could not enter '$PROJ_BASE/python'." >&2
         return 1
     }
 
-    python -m pytest "$@"
+    "${CONDA_PREFIX}/bin/python" -m pytest "$@"
 )
 
 echo "'pytest' command created."

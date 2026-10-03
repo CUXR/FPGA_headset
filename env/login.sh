@@ -100,10 +100,10 @@ pytest() (
         return 1
     fi
 
-    cd "$PROJ_BASE/python" || {
-        echo "Error: Could not enter '$PROJ_BASE/python'." >&2
-        return 1
-    }
+    # cd "$PROJ_BASE/python" || {
+    #     echo "Error: Could not enter '$PROJ_BASE/python'." >&2
+    #     return 1
+    # }
 
     "${CONDA_PREFIX}/bin/python" -m pytest "$@"
 )
@@ -111,10 +111,28 @@ pytest() (
 echo "'pytest' command created."
 
 
+# ============================= VERIFICATION =============================
+# Add the Icarus Verilog convenience commands to the current shell.
+# ========================================================================
+
+VERIFICATION_SCRIPT="${PROJ_BASE}/verif/verification.sh"
+
+if [[ ! -f "$VERIFICATION_SCRIPT" ]]; then
+    echo "Error: Could not find '$VERIFICATION_SCRIPT'." >&2
+    return 1
+fi
+
+source "$VERIFICATION_SCRIPT" || {
+    echo "Error: Failed to set up verification commands." >&2
+    return 1
+}
+
+
 # ================================ CLEANUP ================================
 
 unset SCRIPT_DIR
 unset ENV_FILE
 unset ENV_NAME
+unset VERIFICATION_SCRIPT
 
 echo -e "\nProject environment ready."

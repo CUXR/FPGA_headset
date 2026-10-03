@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 # Source from zsh. Parameters belong in each module's testbench.
+
+echo "Setting up Verification commands..."
+
 VERIF_BASE="${PROJ_BASE}/verif"
 
 _verif_modules() {
@@ -66,6 +69,8 @@ lint() (
   echo "Compile passed: $1"
 )
 
+echo "  'lint' command created."
+
 sim() (
   _verif_list "$@"
   local result=$?
@@ -106,6 +111,8 @@ sim() (
   return "$result"
 )
 
+echo "  'sim' command created."
+
 regress() (
   _verif_list "$@"
   local result=$?
@@ -127,6 +134,8 @@ regress() (
   (( total > 0 && failed == 0 ))
 )
 
+echo "  'regress' command created."
+
 clean() (
   _verif_list "$@"
   local result=$?
@@ -146,4 +155,4 @@ clean_all() (
   echo "Cleaned all simulation directories."
 )
 
-echo "Verification commands ready: lint, sim, regress, clean, clean_all"
+echo "  'clean' and 'clean_all' commands created."

@@ -81,7 +81,7 @@ conda activate "$ENV_NAME" || {
 export PATH="${CONDA_PREFIX}/bin:${PATH}"
 hash -r
 
-echo "Activated Conda environment '$ENV_NAME'."
+echo "  Activated Conda environment '$ENV_NAME'."
 
 
 # ================================ PYTEST ================================
@@ -108,13 +108,14 @@ pytest() (
     "${CONDA_PREFIX}/bin/python" -m pytest "$@"
 )
 
-echo "'pytest' command created."
+echo "  'pytest' command created."
 
 
 # ============================= VERIFICATION =============================
 # Add the Icarus Verilog convenience commands to the current shell.
 # ========================================================================
 
+echo ""
 VERIFICATION_SCRIPT="${PROJ_BASE}/verif/verification.sh"
 
 if [[ ! -f "$VERIFICATION_SCRIPT" ]]; then

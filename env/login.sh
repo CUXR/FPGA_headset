@@ -5,8 +5,7 @@
 #   source env/login.sh
 #
 
-# Get the location of this script when sourced from zsh
-SCRIPT_PATH="${(%):-%N}"
+SCRIPT_PATH="${BASH_SOURCE[0]}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "$SCRIPT_PATH")" && pwd)"
 PROJ_BASE="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 export PROJ_BASE

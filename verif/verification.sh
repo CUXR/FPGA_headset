@@ -1,14 +1,16 @@
-#!/usr/bin/env zsh
-# Source from zsh. Parameters belong in each module's testbench.
+#!/usr/bin/env bash
+# Source from Bash. Parameters belong in each module's testbench.
 
 echo "Setting up Verification commands..."
 
 VERIF_BASE="${PROJ_BASE}/verif"
 
 _verif_modules() {
-  local file
-  for file in "$VERIF_BASE"/*/filelist.f(N); do
-    print -r -- "${file:h:t}"
+  local file directory
+  for file in "$VERIF_BASE"/*/filelist.f; do
+    [[ -f "$file" ]] || continue
+    directory="${file%/filelist.f}"
+    printf '%s\n' "${directory##*/}"
   done
 }
 
@@ -82,7 +84,7 @@ sim() (
   fi
 
   local module="$1" name="$2" seed="${3:-1}"
-  if [[ ! "$seed" =~ '^[0-9]+$' ]] || (( seed > 2147483647 )); then
+  if [[ ! "$seed" =~ ^[0-9]+$ ]] || (( seed > 2147483647 )); then
     echo "Seed must be an integer from 0 to 2147483647." >&2
     return 2
   fi

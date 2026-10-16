@@ -93,21 +93,21 @@ fi
 #   pytest -v
 # ========================================================================
 
-pytest() (
-    if [[ -z "${PROJ_BASE:-}" ]]; then
-        echo "Error: PROJ_BASE is not set." >&2
-        return 1
-    fi
+# pytest() (
+#     if [[ -z "${PROJ_BASE:-}" ]]; then
+#         echo "Error: PROJ_BASE is not set." >&2
+#         return 1
+#     fi
 
-    # cd "$PROJ_BASE/python" || {
-    #     echo "Error: Could not enter '$PROJ_BASE/python'." >&2
-    #     return 1
-    # }
+#     # cd "$PROJ_BASE/python" || {
+#     #     echo "Error: Could not enter '$PROJ_BASE/python'." >&2
+#     #     return 1
+#     # }
 
-    "${CONDA_PREFIX}/bin/python" -m pytest "$@"
-)
+#     "${CONDA_PREFIX}/bin/python" -m pytest "$@"
+# )
 
-echo "  'pytest' command created."
+# echo "  'pytest' command created."
 
 
 # ============================= VERIFICATION =============================

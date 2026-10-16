@@ -44,43 +44,43 @@ if [[ -z "$ENV_NAME" ]]; then
     return 1
 fi
 
-# Make sure Conda is available
-if ! command -v conda >/dev/null 2>&1; then
-    echo "Error: Conda is not available in the current shell." >&2
-    echo "Initialize Conda first, then source this script again." >&2
-    return 1
-fi
+# # Make sure Conda is available
+# if ! command -v conda >/dev/null 2>&1; then
+#     echo "Error: Conda is not available in the current shell." >&2
+#     echo "Initialize Conda first, then source this script again." >&2
+#     return 1
+# fi
 
-# Create the environment if it does not exist.
-# Otherwise, update it to match environment.yml.
-if conda env list | awk '{print $1}' | grep -Fxq "$ENV_NAME"; then
-    conda env update \
-        --name "$ENV_NAME" \
-        --file "$ENV_FILE" \
-        --prune \
-        --quiet >/dev/null 2>&1
-else
-    echo "Creating Conda environment '$ENV_NAME'..."
-    conda env create \
-        --file "$ENV_FILE" \
-        --quiet >/dev/null 2>&1
-fi
+# # Create the environment if it does not exist.
+# # Otherwise, update it to match environment.yml.
+# if conda env list | awk '{print $1}' | grep -Fxq "$ENV_NAME"; then
+#     conda env update \
+#         --name "$ENV_NAME" \
+#         --file "$ENV_FILE" \
+#         --prune \
+#         --quiet >/dev/null 2>&1
+# else
+#     echo "Creating Conda environment '$ENV_NAME'..."
+#     conda env create \
+#         --file "$ENV_FILE" \
+#         --quiet >/dev/null 2>&1
+# fi
 
-# Prevent Conda from modifying the shell prompt for this shell only.
-export CONDA_CHANGEPS1=false
+# # Prevent Conda from modifying the shell prompt for this shell only.
+# export CONDA_CHANGEPS1=false
 
-conda activate "$ENV_NAME" || {
-    echo "Error: Failed to activate Conda environment '$ENV_NAME'." >&2
-    return 1
-}
+# conda activate "$ENV_NAME" || {
+#     echo "Error: Failed to activate Conda environment '$ENV_NAME'." >&2
+#     return 1
+# }
 
-# pyenv may have added its shims ahead of Conda's existing PATH entry. Conda
-# then replaces that entry in place during activation, leaving pyenv's Python
-# as the default. Explicitly put the activated environment first.
-export PATH="${CONDA_PREFIX}/bin:${PATH}"
-hash -r
+# # pyenv may have added its shims ahead of Conda's existing PATH entry. Conda
+# # then replaces that entry in place during activation, leaving pyenv's Python
+# # as the default. Explicitly put the activated environment first.
+# export PATH="${CONDA_PREFIX}/bin:${PATH}"
+# hash -r
 
-echo "  Activated Conda environment '$ENV_NAME'."
+# echo "  Activated Conda environment '$ENV_NAME'."
 
 
 # ================================ PYTEST ================================

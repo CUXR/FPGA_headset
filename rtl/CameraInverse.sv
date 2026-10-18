@@ -5,13 +5,13 @@ module CameraInverse #(
   input  logic clk,
   input  logic rst,
 
-  input  logic [DATA_W-1:0] i_matrix[3:0][3:0],
-  input  logic              i_matrix_valid,
-  output logic              o_matrix_ready,
+  input  logic signed [DATA_W-1:0] i_matrix[3:0][3:0],
+  input  logic                     i_matrix_valid,
+  output logic                     o_matrix_ready,
 
-  output logic [DATA_W-1:0] o_inverse[3:0][3:0],
-  output logic              o_inverse_valid,
-  input  logic              i_inverse_ready
+  output logic signed [DATA_W-1:0] o_inverse[3:0][3:0],
+  output logic                     o_inverse_valid,
+  input  logic                     i_inverse_ready
 );
 
   localparam int PROD_W = 2 * DATA_W;

@@ -1,36 +1,38 @@
 `ifndef MAT_VEC_ENGINE_SV
 `define MAT_VEC_ENGINE_SV
 
+`timescale 1ns/1ps
+
 module MatVecEngine#(
-parameter int DATA_W = 18,
-parameter int NUM_COLS = 4
+  parameter int DATA_W = 18,
+  parameter int NUM_COLS = 4
 )
 (
     // Clock and Reset
-    input logic clk,
-    input logic rst,
+    input  logic clk,
+    input  logic rst,
 
     // Val/Rdy interface IO
-    input logic mat_in_val,
+    input  logic mat_in_val,
     output logic mat_in_rdy,
-    input logic vec_in_val,
+    input  logic vec_in_val,
     output logic vec_in_rdy,
 
     output logic vec_out_val,
-    input logic vec_out_rdy,
+    input  logic vec_out_rdy,
     output logic mat_out_val,
-    input logic mat_out_rdy,
+    input  logic mat_out_rdy,
 
     // Input Control Signals
-    input logic is_matrix_col,
-    input logic isend_vec,
-    input logic isend_mat,
+    input  logic is_matrix_col,
+    input  logic isend_vec,
+    input  logic isend_mat,
 
-    // Matrix/Vector Inputs
-    input logic signed [DATA_W - 1 : 0] matrix_in[0:3][0:3],
-    input logic signed [DATA_W - 1 : 0] vector_in[0:3],
-    output logic signed [DATA_W - 1: 0] vector_out[0:3],
-    output logic signed [DATA_W - 1 : 0] matrix_out[0:3][0:3]
+    // Matrix/Vector Inputs and Outputs
+    input  logic signed [DATA_W - 1 : 0] matrix_in[0:3][0:3],
+    input  logic signed [DATA_W - 1 : 0] vector_in[0:3],
+    output logic signed [DATA_W - 1 : 0] matrix_out[0:3][0:3],
+    output logic signed [DATA_W - 1 : 0] vector_out[0:3]
 
     );
 
@@ -43,8 +45,6 @@ parameter int NUM_COLS = 4
     logic col_en;
     logic vector_en;
     logic in_mat_en;
-    localparam MAT_INPUT = 1'b0;
-    localparam MAT_OUTPUT = 1'b1;
     logic stalled;
 
     assign stalled = (vec_out_val && !vec_out_rdy) || (mat_out_val && !mat_out_rdy);
@@ -68,12 +68,10 @@ parameter int NUM_COLS = 4
 
         if (rst) begin
             upcol_mul <= 2'b0;
-
         end
         else if (col_en) begin
             upcol_mul <= upcol_mul + 1;
         end
-
     end
 
     // Pipeline Registers
@@ -230,5 +228,7 @@ parameter int NUM_COLS = 4
     assign mat_out_val = mend_wb;
     assign vec_out_val = vend_wb;
     assign matrix_out = wb_matrix_reg_out;
+
+endmodule
 
 `endif // MATRIX_VEC_ENGINE_SV

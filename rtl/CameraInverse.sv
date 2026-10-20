@@ -1,3 +1,6 @@
+`ifndef CAMERA_INVERSE_SV
+`define CAMERA_INVERSE_SV
+
 `timescale 1ns/1ps
 
 module CameraInverse #(
@@ -222,3 +225,5 @@ module CameraInverse #(
   end
 
 endmodule
+
+`endif // CAMERA_INVERSE_SV

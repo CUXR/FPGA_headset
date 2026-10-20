@@ -42,19 +42,9 @@ Yea so chat lowkey gave a genius idea to make the inverse module fast. The
 camera matrix that comes in only contains rotational and translational data.
 For these cases, the inverse is just the following:
 
-$$
-A^{-1}
-=
-\begin{bmatrix}
-R & t \\
-0 & 1
-\end{bmatrix}^{-1}
-=
-\begin{bmatrix}
-R^{T} & -R^{T}t \\
-0 & 1
-\end{bmatrix}
-$$
+```math
+A^{-1}=\begin{bmatrix}R & t \\ 0 & 1\end{bmatrix}^{-1}=\begin{bmatrix}R^{T} & -R^{T}t \\ 0 & 1\end{bmatrix}
+```
 
 Where R is a 3x3 sub-matrix (storing the rotational data) and t is a 3x1 
 vector (storing the translational data).

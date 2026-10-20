@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module CameraInverse #(
   parameter int DATA_W = 18,
   parameter int FRAC_W = 0

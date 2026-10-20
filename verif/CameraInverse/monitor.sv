@@ -7,13 +7,17 @@ module monitor #(parameter integer DATA_W = 18) (
   input logic i_inverse_ready,
   input wire signed [DATA_W-1:0] o_inverse[3:0][3:0]
 );
-  logic held = 0;
+  logic held;
   logic signed [DATA_W-1:0] held_data[3:0][3:0];
   integer row, column;
 
+  initial begin
+    held = 0;  // To fix lint warning. Dunno why.
+  end
+
   always @(posedge clk) begin
     if (rst) begin
-      held = 0;
+      held <= 0;
     end else begin
       if (held && o_inverse_valid !== 1'b1)
         $fatal(1, "Output valid changed while stalled");
@@ -27,11 +31,11 @@ module monitor #(parameter integer DATA_W = 18) (
               (^o_inverse[row][column] === 1'bx))
             $fatal(1, "Unknown accepted output");
 
-          held_data[row][column] = o_inverse[row][column];
+          held_data[row][column] <= o_inverse[row][column];
         end
       end
 
-      held = (o_inverse_valid === 1'b1 && i_inverse_ready === 1'b0);
+      held <= (o_inverse_valid === 1'b1 && i_inverse_ready === 1'b0);
     end
   end
 endmodule

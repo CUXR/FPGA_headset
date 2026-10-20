@@ -77,7 +77,7 @@ module tests #(
     end
   endtask
 
-  task test_reset(input integer wait_output);
+  task test_reset(input logic wait_output);
     begin
       identity_inputs();
       tb_CameraInverse.input_driver.hold_output = 1;

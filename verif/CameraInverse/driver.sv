@@ -3,24 +3,31 @@
 module driver #(parameter integer DATA_W = 18) (
   input logic clk,
   input logic o_matrix_ready,
-  output logic rst = 1,
-  output logic i_matrix_valid = 0,
+  output logic rst,
+  output logic i_matrix_valid,
   output logic signed [DATA_W-1:0] i_matrix[3:0][3:0],
-  output logic i_inverse_ready = 0
+  output logic i_inverse_ready
 );
   integer matrix [0:15];
   integer input_gap = 0;
   integer ready_period = 1;
-  integer ready_cycle = 0;
+  integer ready_cycle;
   logic hold_output = 0;
+
+  initial begin
+    rst = 1;
+    i_matrix_valid = 0;
+    i_inverse_ready = 0;
+    ready_cycle = 0;  // To fix lint warning. Dunno why.
+  end
 
   always @(negedge clk) begin
     if (rst || hold_output)
-      i_inverse_ready = 0;
+      i_inverse_ready <= 0;
     else
-      i_inverse_ready = (ready_cycle % ready_period == 0);
+      i_inverse_ready <= (ready_cycle % ready_period == 0);
 
-    ready_cycle = ready_cycle + 1;
+    ready_cycle <= ready_cycle + 1;
   end
 
   task reset_dut;
@@ -46,7 +53,7 @@ module driver #(parameter integer DATA_W = 18) (
 
       i_matrix_valid = 1;
       for (index = 0; index < 16; index = index + 1)
-        i_matrix[index / 4][index % 4] = matrix[index];
+        i_matrix[index / 4][index % 4] = DATA_W'(matrix[index]);
 
       @(posedge clk);
       while (o_matrix_ready !== 1'b1) @(posedge clk);

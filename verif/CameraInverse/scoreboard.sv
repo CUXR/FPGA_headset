@@ -9,8 +9,12 @@ module scoreboard #(parameter integer DATA_W = 18) (
 );
   integer expected [0:1023];
   integer expected_count = 0;
-  integer actual_count = 0;
+  integer actual_count;
   integer index;
+
+  initial begin
+    actual_count = 0;  // To fix lint warning. Dunno why.
+  end
 
   // Write all 16 expected elements manually, in row-major order.
   task expect_matrix(
@@ -48,13 +52,13 @@ module scoreboard #(parameter integer DATA_W = 18) (
         $fatal(1, "Unexpected extra output matrix");
 
       for (index = 0; index < 16; index = index + 1) begin
-        if ($signed(o_inverse[index / 4][index % 4]) !== expected[actual_count + index])
+        if (int'($signed(o_inverse[index / 4][index % 4])) !== expected[actual_count + index])
           $fatal(1, "Output [%0d][%0d]: expected %0d, received %0d",
                  index / 4, index % 4, expected[actual_count + index],
                  $signed(o_inverse[index / 4][index % 4]));
       end
 
-      actual_count = actual_count + 16;
+      actual_count <= actual_count + 16;
     end
   end
 

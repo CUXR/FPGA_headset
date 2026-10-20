@@ -4,8 +4,11 @@ module tb_CameraInverse;
   parameter integer DATA_W = 18;
   parameter integer FRAC_W = 0;
 
-  logic clk = 0;
-  always #5 clk = ~clk;
+  logic clk;
+  initial begin
+    clk = 0;
+    forever #5 clk = ~clk;
+  end
 
   logic rst;
   logic i_matrix_valid;

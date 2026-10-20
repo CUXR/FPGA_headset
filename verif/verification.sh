@@ -63,12 +63,23 @@ lint() (
     return 2
   fi
 
+  if ! command -v verilator >/dev/null 2>&1; then
+    echo "lint requires Verilator; install it and ensure it is on PATH." >&2
+    return 127
+  fi
+
   cd "$PROJ_BASE" || return 1
   local directory="$PROJ_BASE/sim/$1/lint"
   mkdir -p "$directory" || return 1
-  _verif_compile "$1" "$directory" || return $?
+  # Verilator includes source excerpts, line/column numbers, and carets.
+  # Check the complete testbench; --timing supports its clock and task delays.
+  verilator --lint-only --timing -Wall -Wno-fatal --error-limit 0 \
+    --top-module "tb_$1" -f "verif/$1/filelist.f" \
+    > "$directory/compile.log" 2>&1
+  result=$?
   cat "$directory/compile.log"
-  echo "Compile passed: $1"
+  (( result == 0 )) || return "$result"
+  echo "Lint passed: $1"
 )
 
 echo "  'lint' command created."

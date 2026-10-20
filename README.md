@@ -1,6 +1,6 @@
 # FPGA Headset
 
-## 1. Floating-point reference renderer
+## 1. Floating-point reference renderer (Codex generated)
 
 ### 1.1 Coordinate conventions
 
@@ -28,46 +28,44 @@ From `python/`, run `pytest -q` to verify every stage, or
 
 ### 2.1 Ready/valid transfers
 
-We will use ready/valid transactions between blocks.
-
-```rtl
-input  logic         in_valid;
-output logic         in_ready;
-input  line_packet_t in_data;
-
-output logic         out_valid;
-input  logic         out_ready;
-output line_packet_t out_data;
-```
-
-A transaction transfers on a rising clock edge when:
-
-```rtl
-transfer = valid && ready;
-```
-
-- The producer asserts `valid` when it has a transaction available.
-- If `valid` is high and `ready` is low, the producer holds both `valid` and
-the payload stable.
-- The consumer asserts `ready` when it can accept a transaction.
-- The producer must not wait for `ready` before asserting `valid`.
+We just use ready valid for the whole thing. Nothin crazy here.
 
 ## 3. Hardware renderer
 
-### 3.1 Model transform
+### 3.1 MatVecEngine
 
-[`rtl/model_transform.sv`](rtl/model_transform.sv) multiplies one signed 4×4
-matrix by one signed four-component vector. Send the 16 matrix elements in
-row-major order, one per accepted input cycle. Send the four vector components
-alongside the first four matrix elements. The module returns four result
-components in row order; each output stays valid and unchanged until accepted.
+UPDATE README
 
-The three registered stages capture operands, multiply, and accumulate. With
-no input gaps, loading takes 16 clock cycles. The first output becomes valid
-three clock edges after the last input is accepted. Sending the four outputs
-takes four more handshakes, or four cycles if `i_ready` stays high. Input or
-output stalls extend these times.
+### 3.2 Camera inverse
 
-Inputs and outputs are signed `DATA_W`-bit values (18 bits by default). Each
-product is `2*DATA_W` bits and each row accumulator is `2*DATA_W+2` bits. The
-output uses the low `DATA_W` bits of the sum.
+Yea so chat lowkey gave a genius idea to make the inverse module fast. The 
+camera matrix that comes in only contains rotational and translational data.
+For these cases, the inverse is just the following:
+
+$$A^{-1} = \begin{pmatrix} R & t \\ 0 & 1 \end{pmatrix}^{-1} = 
+\begin{pmatrix} R^{T} & -R^{T}t \\ 0 & 1 \end{pmatrix}$$
+
+Where R is a 3x3 sub-matrix (storing the rotational data) and t is a 3x1 
+vector (storing the translational data).
+
+ts is genuenly so easy to do in hardware (compared to an actual inverse). The 
+only element that requires computation is the $-R^{T}t$ element. The 
+module is pipeline in the following method:
+
+- Stage 0: Input storing
+- Stage 1: Multiply matrix element by vector component (3 multiplications, one per 
+  vector element)
+- Stage 2: Accumulate products
+- Stage 3: Negate the accumulated sums (because there is a negative sign)
+- Stage 4: Send the output
+
+
+
+Run these commands to test it:
+```sh
+source env/login.sh
+lint CameraInverse
+sim CameraInverse --list
+sim CameraInverse rotations
+regress CameraInverse
+```

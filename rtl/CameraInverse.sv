@@ -4,8 +4,8 @@
 `timescale 1ns/1ps
 
 module CameraInverse #(
-  parameter int DATA_W = 18,
-  parameter int FRAC_W = 0
+  parameter int DATA_W = 20,  // Q8.12
+  parameter int FRAC_W = 12
 ) (
   input  logic clk,
   input  logic rst,

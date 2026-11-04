@@ -5,3 +5,10 @@ __pycache__/
 .pytest_cache/
 python/output/
 sim/
+
+headset.cache/
+headset.hw/
+headset.ioplanning/
+headset.ip_user_files/
+headset.runs/
+headset.sim/

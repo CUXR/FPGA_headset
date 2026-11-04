@@ -10,10 +10,10 @@ module HeadsetTop #(
     output logic result_valid
 );
 
-    localparam int DATA_W = 20;
-    localparam int FRAC_W = 12;
+    localparam int DATA_W = 18;
+    localparam int FRAC_W = 10;
 
-    // 4x4 matrices, each element 20 bits
+    // 4x4 matrices, each element 18 bits
     logic signed [DATA_W-1:0] i_matrix[3:0][3:0];
     logic signed [DATA_W-1:0] o_inverse[3:0][3:0];
 
@@ -22,8 +22,8 @@ module HeadsetTop #(
     logic o_inverse_valid;
     logic i_inverse_ready;
 
-    // Internal 320-bit input generator
-    logic [319:0] matrix_data;
+    // Internal 288-bit input generator
+    logic [287:0] matrix_data;
 
     assign i_matrix_valid = 1'b1;
     assign i_inverse_ready = 1'b1;
@@ -31,17 +31,17 @@ module HeadsetTop #(
     // Generate changing input data
     always_ff @(posedge clk) begin
         if (rst) begin
-            matrix_data <= 320'h123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF;
+            matrix_data <= 288'h123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABC;
         end
         else if (o_matrix_ready) begin
             matrix_data <= {
-                matrix_data[318:0],
-                matrix_data[319] ^ matrix_data[316]
+                matrix_data[286:0],
+                matrix_data[287] ^ matrix_data[284]
             };
         end
     end
 
-    // Convert 320-bit vector to 4x4 unpacked array
+    // Convert 288-bit vector to 4x4 unpacked array
     for (genvar i = 0; i < 4; i++) begin : ROW
         for (genvar j = 0; j < 4; j++) begin : COL
             assign i_matrix[i][j] =
@@ -64,7 +64,7 @@ module HeadsetTop #(
         .i_inverse_ready (i_inverse_ready)
     );
 
-    // Compress 320 output bits into 16 observable bits
+    // Compress 288 output bits into 16 observable bits
     always_ff @(posedge clk) begin
         if (rst) begin
             result_check <= '0;

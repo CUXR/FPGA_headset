@@ -14,16 +14,18 @@ module thingthatinterpretsi2c
     localparam IDLE = 4'd0;
     localparam START = 4'd1;
     localparam SEND_SLAVE_ADDR = 4'd2;
-    localparam ACK_WAIT = 4'd3;
-    localparam SEND_RW_BIT = 4'd4;
+    localparam ACK_WAIT = 4'd4;
+    localparam SEND_RW_BIT = 4'd3;
     localparam SEND_DATA = 4'd5;
     localparam READ_DATA = 4'd6;
     localparam DATA_ACK_WAIT = 4'd7;
     localparam STOP = 4'd8;
     localparam DONE = 4'd9;
+    localparam logic [6:0] SLAVE_ADDR = 7'b0;
 
-    // SCL Divider
+    // Counters
 
+    // Clock Divider and Early State Handling
     logic [9:0] counter;
     logic do_i2c;
     always_ff @(posedge clk) begin
@@ -53,21 +55,29 @@ module thingthatinterpretsi2c
         end
     end
 
+    // Start State Timing Counter
     logic [9:0] start_counter;
-
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (rst || state != START) begin
             start_counter <= 1'b0;
         end
         else if (state == START && start_counter < 10'd599) begin
             start_counter <= start_counter + 1;
         end
-        else begin
-            start_counter <= 0;
-        end
     end
     
-    assign end_start = (start_counter == 10'd599)
+    assign end_start = (start_counter == 10'd599);
+
+    // Slave Address Counter
+    logic [3:0] slv_counter;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            slv_counter <= 4'd6;
+        end
+        else if (do_i2c && state == SEND_SLAVE_ADDR && !scl && slv_counter != 4'b0) begin
+            slv_counter <= slv_counter - 1;
+        end
+    end
 
     logic [3:0] state;
     logic [3:0] next_state;
@@ -103,7 +113,8 @@ module thingthatinterpretsi2c
 
         case (state) 
             (IDLE) : next_state = (begin_transaction) ? START : IDLE;
-            (START) : next_state = (end_start) ? SEND_ADDR : START;
+            (START) : next_state = (end_start) ? SEND_SLAVE_ADDR : START;
+            (SEND_SLAVE_ADDR) : next_state = (do_i2c && !scl && slv_counter == 4'b0) ? SEND_RW_BIT : SEND_SLAVE_ADDR;
         endcase
 
     end
@@ -119,4 +130,8 @@ module thingthatinterpretsi2c
             (START) : begin
                 transaction_active = 1'b1;
                 sda_dr = 1'b0;
+            end
+            (SEND_SLAVE_ADDR) : begin
+                transaction_active = 1'b1;
+                sda_dr = SLAVE_ADDR[slv_counter];
         endcase

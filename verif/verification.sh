@@ -89,12 +89,26 @@ sim() (
   local result=$?
   (( result == 1 )) || return "$result"
 
-  if [[ $# -lt 2 || $# -gt 3 ]]; then
-    echo "Usage: sim <module> <case> [seed] | sim [module] --list" >&2
+  if [[ $# -lt 2 || $# -gt 4 ]]; then
+    echo "Usage: sim <module> <case> [seed] [--waves] | sim [module] --list" >&2
     return 2
   fi
 
-  local module="$1" name="$2" seed="${3:-1}"
+  local module="$1" name="$2" seed=1 waves=0 seed_set=0 argument
+  local -a wave_args=()
+  shift 2
+  for argument in "$@"; do
+    if [[ "$argument" == --waves && "$waves" == 0 ]]; then
+      waves=1
+    elif [[ "$argument" =~ ^[0-9]+$ && "$seed_set" == 0 ]]; then
+      seed="$argument"
+      seed_set=1
+    else
+      echo "Usage: sim <module> <case> [seed] [--waves] | sim [module] --list" >&2
+      return 2
+    fi
+  done
+
   if [[ ! "$seed" =~ ^[0-9]+$ ]] || (( seed > 2147483647 )); then
     echo "Seed must be an integer from 0 to 2147483647." >&2
     return 2
@@ -116,11 +130,18 @@ sim() (
   mkdir -p "$directory" || return 1
   _verif_compile "$module" "$directory" || return $?
 
-  vvp -N "$directory/test.vvp" "+TEST=$name" "+SEED=$seed" \
+  if (( waves )); then
+    wave_args=("+WAVES=$directory/waves.vcd")
+  fi
+
+  vvp -N "$directory/test.vvp" "+TEST=$name" "+SEED=$seed" "${wave_args[@]}" \
     > "$directory/simulation.log" 2>&1
   result=$?
   cat "$directory/simulation.log"
   echo "Logs: $directory"
+  if (( waves )); then
+    echo "Waves: $directory/waves.vcd"
+  fi
   return "$result"
 )
 

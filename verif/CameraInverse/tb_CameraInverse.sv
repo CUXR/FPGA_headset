@@ -60,8 +60,16 @@ module tb_CameraInverse;
     .o_inverse_valid (o_inverse_valid)
   );
 
+  string waves_file;
+
   initial begin
-    // TODO: Add vcd dump for waveform viewing
+    if ($value$plusargs("WAVES=%s", waves_file)) begin
+      $dumpfile(waves_file);
+      $dumpvars(0, tb_CameraInverse);
+    end
+  end
+
+  initial begin
     #1000000;
     $fatal(1, "Simulation timeout");
   end

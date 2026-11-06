@@ -108,8 +108,16 @@ module tb_MatVecEngine;
     .clk             (clk)
   );
 
+  string waves_file;
+
   initial begin
-    // TODO: Add vcd dump for waveform viewing
+    if ($value$plusargs("WAVES=%s", waves_file)) begin
+      $dumpfile(waves_file);
+      $dumpvars(0, tb_MatVecEngine);
+    end
+  end
+
+  initial begin
     #1000000;
     $fatal(1, "Simulation timeout");
   end

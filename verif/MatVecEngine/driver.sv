@@ -61,25 +61,20 @@ module driver #(parameter integer DATA_W = 18) (
 
   task send_matrix;
     integer index;
-
     begin
       @(negedge clk);
-      if (input_gap > 0) begin
-        i_mat_valid = 0;
-        i_vec_valid = 0;
-        repeat (input_gap) @(negedge clk);
-      end
-
-      i_mat_valid = 1;
+      i_mat_valid = 0;
       i_vec_valid = 0;
       i_matrix_mode = 0;
+      if (input_gap > 0)
+        repeat (input_gap) @(negedge clk);
+
       for (index = 0; index < 16; index = index + 1)
         i_matrix[index / 4][index % 4] = DATA_W'(matrix[index]);
+      i_mat_valid = 1;
 
       @(posedge clk);
       while (o_mat_ready !== 1'b1) @(posedge clk);
-
-      // Return on the acceptance edge; the next task drives at negedge.
     end
   endtask
 
@@ -100,6 +95,33 @@ module driver #(parameter integer DATA_W = 18) (
 
       @(posedge clk);
       while (o_vec_ready !== 1'b1) @(posedge clk);
+    end
+  endtask
+
+  task send_matrix_and_vector(input logic matrix_mode);
+    integer index;
+    begin
+      @(negedge clk);
+      i_mat_valid = 0;
+      i_vec_valid = 0;
+      i_matrix_mode = 0;
+      if (input_gap > 0)
+        repeat (input_gap) @(negedge clk);
+
+      for (index = 0; index < 16; index = index + 1)
+        i_matrix[index / 4][index % 4] = DATA_W'(matrix[index]);
+      for (index = 0; index < 4; index = index + 1)
+        i_vec[index] = DATA_W'(vector[index]);
+      i_matrix_mode = matrix_mode;
+      i_mat_valid = 1;
+      i_vec_valid = 1;
+
+      @(posedge clk);
+      while (o_mat_ready !== 1'b1 || o_vec_ready !== 1'b1) begin
+        if (o_mat_ready === 1'b1 || o_vec_ready === 1'b1)
+          $fatal(1, "send_matrix_and_vector requires a matrix operation boundary");
+        @(posedge clk);
+      end
     end
   endtask
 

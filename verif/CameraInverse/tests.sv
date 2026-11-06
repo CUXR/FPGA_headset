@@ -3,7 +3,7 @@
 // Hierarchical task calls keep this module plain and avoid virtual interfaces.
 module tests #(
   parameter integer DATA_W = 18,
-  parameter integer FRAC_W = 0
+  parameter integer FRAC_W = 10
 ) (
   input logic clk,
   input logic o_inverse_valid

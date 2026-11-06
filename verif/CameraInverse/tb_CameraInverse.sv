@@ -2,7 +2,7 @@
 
 module tb_CameraInverse;
   parameter integer DATA_W = 18;
-  parameter integer FRAC_W = 0;
+  parameter integer FRAC_W = 10;
 
   logic clk;
   initial begin

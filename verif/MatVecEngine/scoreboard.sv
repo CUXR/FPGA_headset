@@ -3,13 +3,13 @@
 module scoreboard #(parameter integer DATA_W = 18) (
   input logic clk,
   input logic rst,
-  input logic o_mat_out_valid,
-  input logic i_mat_out_ready,
-  input wire signed [DATA_W-1:0] o_mat_out[0:3][0:3],
+  input logic o_mat_valid,
+  input logic i_mat_ready,
+  input wire signed [DATA_W-1:0] o_mat[0:3][0:3],
 
-  input logic o_vec_out_valid,
-  input logic i_vec_out_ready,
-  input wire signed [DATA_W-1:0] o_vec_out[0:3]
+  input logic o_vec_valid,
+  input logic i_vec_ready,
+  input wire signed [DATA_W-1:0] o_vec[0:3]
 );
   integer mat_expected [0:1023];
   integer vec_expected [0:1023];
@@ -73,29 +73,29 @@ module scoreboard #(parameter integer DATA_W = 18) (
   endtask
 
   always @(posedge clk) begin
-    if (!rst && o_mat_out_valid === 1'b1 && i_mat_out_ready === 1'b1) begin
+    if (!rst && o_mat_valid === 1'b1 && i_mat_ready === 1'b1) begin
       if (mat_actual_count >= mat_expected_count)
         $fatal(1, "Unexpected extra output matrix");
 
       for (index = 0; index < 16; index = index + 1) begin
-        if (int'($signed(o_mat_out[index / 4][index % 4])) !== mat_expected[mat_actual_count + index])
+        if (int'($signed(o_mat[index / 4][index % 4])) !== mat_expected[mat_actual_count + index])
           $fatal(1, "Output [%0d][%0d]: expected %0d, received %0d",
                  index / 4, index % 4, mat_expected[mat_actual_count + index],
-                 $signed(o_mat_out[index / 4][index % 4]));
+                 $signed(o_mat[index / 4][index % 4]));
       end
 
       mat_actual_count <= mat_actual_count + 16;
     end
 
-    if (!rst && o_vec_out_valid === 1'b1 && i_vec_out_ready === 1'b1) begin
+    if (!rst && o_vec_valid === 1'b1 && i_vec_ready === 1'b1) begin
       if (vec_actual_count >= vec_expected_count)
         $fatal(1, "Unexpected extra output vector");
 
       for (index = 0; index < 4; index = index + 1) begin
-        if (int'($signed(o_vec_out[index])) !== vec_expected[vec_actual_count + index])
+        if (int'($signed(o_vec[index])) !== vec_expected[vec_actual_count + index])
           $fatal(1, "Output [%0d]: expected %0d, received %0d",
                  index, vec_expected[vec_actual_count + index],
-                 $signed(o_vec_out[index]));
+                 $signed(o_vec[index]));
       end
 
       vec_actual_count <= vec_actual_count + 4;

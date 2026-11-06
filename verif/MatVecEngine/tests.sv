@@ -1,11 +1,13 @@
 `timescale 1ns/1ps
 
 // Hierarchical task calls follow the CameraInverse verification structure.
-module tests #(parameter integer DATA_W = 18) (
+module tests #(
+  parameter integer DATA_W = 18,
+  parameter integer FRAC_W = 10
+) (
   input logic clk
 );
-  // Todo: Need to change to actual system
-  localparam integer ONE = 1 << (DATA_W / 2);
+  localparam integer ONE = 1 << FRAC_W;
   string name;
 
   task test_matrix_multiply;
@@ -47,31 +49,29 @@ module tests #(parameter integer DATA_W = 18) (
 
       tb_MatVecEngine.input_driver.send_matrix();
 
-      // Consecutive columns: every result is a vector output, and only
-      // the fourth input marks the completed output matrix.
       tb_MatVecEngine.input_driver.vector[0] = ONE;
       tb_MatVecEngine.input_driver.vector[1] = 5 * ONE;
       tb_MatVecEngine.input_driver.vector[2] = 9 * ONE;
       tb_MatVecEngine.input_driver.vector[3] = 13 * ONE;
-      tb_MatVecEngine.input_driver.send_vector(1, 1, 0);
+      tb_MatVecEngine.input_driver.send_vector(1);
 
       tb_MatVecEngine.input_driver.vector[0] = 2 * ONE;
       tb_MatVecEngine.input_driver.vector[1] = 6 * ONE;
       tb_MatVecEngine.input_driver.vector[2] = 10 * ONE;
       tb_MatVecEngine.input_driver.vector[3] = 14 * ONE;
-      tb_MatVecEngine.input_driver.send_vector(1, 1, 0);
+      tb_MatVecEngine.input_driver.send_vector(1);
 
       tb_MatVecEngine.input_driver.vector[0] = 3 * ONE;
       tb_MatVecEngine.input_driver.vector[1] = 7 * ONE;
       tb_MatVecEngine.input_driver.vector[2] = 11 * ONE;
       tb_MatVecEngine.input_driver.vector[3] = 15 * ONE;
-      tb_MatVecEngine.input_driver.send_vector(1, 1, 0);
+      tb_MatVecEngine.input_driver.send_vector(1);
 
       tb_MatVecEngine.input_driver.vector[0] = 4 * ONE;
       tb_MatVecEngine.input_driver.vector[1] = 8 * ONE;
       tb_MatVecEngine.input_driver.vector[2] = 12 * ONE;
       tb_MatVecEngine.input_driver.vector[3] = 16 * ONE;
-      tb_MatVecEngine.input_driver.send_vector(1, 1, 1);
+      tb_MatVecEngine.input_driver.send_vector(1);
       tb_MatVecEngine.input_driver.finish_operation();
       tb_MatVecEngine.result_checker.wait_complete();
     end
@@ -80,8 +80,8 @@ module tests #(parameter integer DATA_W = 18) (
   initial begin
     if (!$value$plusargs("TEST=%s", name)) $fatal(1, "Missing TEST");
     // Keep all encoded inputs and expected results inside signed DATA_W.
-    if (DATA_W < 13 || DATA_W > 30)
-      $fatal(1, "This test supports DATA_W 13 through 30");
+    if (DATA_W < 7 || DATA_W > 30 || FRAC_W < 0 || FRAC_W > DATA_W - 7)
+      $fatal(1, "Test values require DATA_W 7 through 30 and at least 7 integer bits");
 
     tb_MatVecEngine.input_driver.reset_dut();
     if (name == "matrix_multiply") test_matrix_multiply();

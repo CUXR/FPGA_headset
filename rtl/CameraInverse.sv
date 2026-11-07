@@ -25,32 +25,32 @@ module CameraInverse #(
     localparam logic STATE_IDLE    = 1'b0;
     localparam logic STATE_PROCESS = 1'b1;
 
-    logic              state;
-    logic              next_state;
+    logic                     state;
+    logic                     next_state;
 
-    logic              in_accept;
+    logic                     in_accept;
 
-    logic [DATA_W-1:0] matrix_stored[3:0][3:0];
+    logic [DATA_W-1:0]        matrix_stored[3:0][3:0];
 
-    logic [1:0]        stage1_index;
+    logic [1:0]               stage1_index;
     logic signed [PROD_W-1:0] stage1_prod[2:0];
-    logic              stage1_valid;
+    logic                     stage1_valid;
 
-    logic [1:0]        stage2_index;
+    logic [1:0]               stage2_index;
     logic signed [ACC_W-1:0]  stage2_accum[2:0];
-    logic              stage2_valid;
+    logic                     stage2_valid;
 
-    logic [DATA_W-1:0] stage3_result[2:0];
-    logic              stage3_valid;
+    logic [DATA_W-1:0]        stage3_result[2:0];
+    logic                     stage3_valid;
 
-    logic              out_accept;
+    logic                     out_accept;
 
     assign in_accept  = i_matrix_valid && o_matrix_ready;
     assign out_accept = o_inverse_valid && i_inverse_ready;
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Input storing
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -65,9 +65,9 @@ module CameraInverse #(
         end
     end
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Stage 1: Multiply matrix element by vector component
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -100,9 +100,9 @@ module CameraInverse #(
         end
     end
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Stage 2: Accumulate products
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -131,9 +131,9 @@ module CameraInverse #(
         end
     end
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Stage 3: Negate the accumulated sums
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -150,9 +150,9 @@ module CameraInverse #(
         end
     end
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Stage 4: Send the output
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -190,9 +190,9 @@ module CameraInverse #(
         end
     end
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // FSM
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     always_ff @(posedge clk) begin
         if (rst) begin

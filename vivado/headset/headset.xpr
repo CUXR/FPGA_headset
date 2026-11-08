@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="72" Path="C:/Users/miket/cuxr/FPGA_headset/vivado/headset/headset.xpr">
+<Project Product="Vivado" Version="7" Minor="72" Path="C:/Users/cornellxr/Desktop/Headset/FPGA_headset/vivado/headset/headset.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="d379775fff354748bc1ee8082f6db3c6"/>
@@ -105,14 +105,6 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../rtl/HeadsetTop.sv">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../rtl/model_transform.sv">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>

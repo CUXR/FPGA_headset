@@ -128,7 +128,7 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../../../FPGA Headset/FPGA Headset.srcs/sources_1/bd/HDMI_BLOCK/HDMI_BLOCK.bd">
+      <File Path="$PPRDIR/../IP/HDMI_BLOCK.bd">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>

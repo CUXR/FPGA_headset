@@ -8,7 +8,8 @@ module thingthatinterpretsi2c
     output logic scl,
     input logic begin_transaction,
     output logic transaction_active,
-    input logic r_w // 0 = read, 1 = write
+    input logic r_w, // 0 = read, 1 = write
+    input logic ack_pull
     );
    
     //notes 
@@ -118,7 +119,18 @@ module thingthatinterpretsi2c
             (IDLE) : next_state = (begin_transaction) ? START : IDLE;
             (START) : next_state = (end_start) ? SEND_SLAVE_ADDR : START;
             (SEND_SLAVE_ADDR) : next_state = (do_i2c && !scl && slv_counter == 4'b0) ? SEND_RW_BIT : SEND_SLAVE_ADDR;
-            (SEND_RW_BIT) : next_state = ACK_WAIT;
+            (SEND_RW_BIT) : next_state = (do_i2c) ? ACK_WAIT : SEND_RW_BIT;
+            (ACK_WAIT) : begin
+                if (do_i2c) begin
+                    if (ack_pull) begin
+                        next_state = (r_w) ? SEND_DATA : READ_DATA;
+                    end
+                    else begin
+                        next_state = STOP;
+                    end
+                end
+                else begin
+                    next_state = ACK_WAIT;
         endcase
 
     end
@@ -139,7 +151,11 @@ module thingthatinterpretsi2c
                 transaction_active = 1'b1;
                 sda_dr = SLAVE_ADDR[slv_counter];
             end
-            (ACK_WAIT) : begin
+            (SEND_RW_BIT) : begin
                 sda_dr = !r_w;
             end
+            (ACK_WAIT) : begin
+                sda_dr = 1'b1;
+            end
+
         endcase

@@ -7,9 +7,12 @@ module thingthatinterpretsi2c
     inout logic sda,
     output logic scl,
     input logic begin_transaction,
-    output logic transaction_active
+    output logic transaction_active,
+    input logic r_w // 0 = read, 1 = write
     );
    
+    //notes 
+    //rw bit - pull low for writing, pull up (high imp) for reading
     // States 
     localparam IDLE = 4'd0;
     localparam START = 4'd1;
@@ -98,7 +101,7 @@ module thingthatinterpretsi2c
 
     logic sda_dr;
     assign sda = (sda_dr) ? 1'bz : 1'b0;
-
+// 914-619-0498
     always_ff @(posedge clk) begin
         if (rst) begin
             prev_state <= 4'b0;
@@ -115,6 +118,7 @@ module thingthatinterpretsi2c
             (IDLE) : next_state = (begin_transaction) ? START : IDLE;
             (START) : next_state = (end_start) ? SEND_SLAVE_ADDR : START;
             (SEND_SLAVE_ADDR) : next_state = (do_i2c && !scl && slv_counter == 4'b0) ? SEND_RW_BIT : SEND_SLAVE_ADDR;
+            (SEND_RW_BIT) : next_state = ACK_WAIT;
         endcase
 
     end
@@ -134,4 +138,8 @@ module thingthatinterpretsi2c
             (SEND_SLAVE_ADDR) : begin
                 transaction_active = 1'b1;
                 sda_dr = SLAVE_ADDR[slv_counter];
+            end
+            (ACK_WAIT) : begin
+                sda_dr = !r_w;
+            end
         endcase

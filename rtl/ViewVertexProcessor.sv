@@ -542,15 +542,6 @@ module ViewVertexProcessor #(
 
         if (engine_operation && engine_vec_in_valid && engine_vec_counter == 0)
             engine_mat_in_valid = 1'b1;
-
-        if (rst) begin
-            engine_vec_in_valid   = 0;
-            engine_mat_in_valid   = 0;
-            engine_mat_out_ready  = 0;
-            inverse_mat_in_valid  = 0;
-            inverse_mat_out_ready = 0;
-            PV_reg_en             = 0;
-        end
     end
 
 endmodule

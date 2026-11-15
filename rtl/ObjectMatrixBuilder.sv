@@ -70,7 +70,7 @@ module ObjectMatrixBuilder #(
 
     logic                     engine_result_valid;
     logic                     engine_result_ready;
-    wire signed [DATA_W-1:0] engine_result_matrix [0:3][0:3];
+    wire signed [DATA_W-1:0]  engine_result_matrix [0:3][0:3];
 
     assign in_accept = i_object_valid && o_object_ready;
     assign o_object_ready = !rst && (state == STATE_IDLE);
@@ -191,7 +191,7 @@ module ObjectMatrixBuilder #(
     MatVecEngine #(
         .DATA_W(DATA_W),
         .FRAC_W(FRAC_W)
-    ) dut (
+    ) engine (
         .clk           (clk),
         .rst           (rst),
 

@@ -11,7 +11,7 @@ module thingthatinterpretsi2c #(
     input logic begin_transaction,
     output logic transaction_active,
     input logic r_w, // 0 = read, 1 = write
-    input logic ack_pull, // retained for existing connections; ACK is sampled from SDA
+    input logic ack_pull, 
     input logic [7:0] register_address,
     output logic [8*READ_BYTES-1:0] read_data, // first byte in [7:0]
     output logic ack_error,
@@ -31,6 +31,7 @@ module thingthatinterpretsi2c #(
     localparam DONE = 4'd9;
     localparam RESTART = 4'd10;
 
+    // clog2 = round up log 2 to get widths
     localparam int COUNTER_W = (HALF_PERIOD > 1) ? $clog2(HALF_PERIOD) : 1;
     localparam int BYTE_W = (READ_BYTES > 1) ? $clog2(READ_BYTES) : 1;
     logic [COUNTER_W-1:0] counter;

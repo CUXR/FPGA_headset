@@ -165,5 +165,4 @@ module SceneMemory #(
 
 endmodule
 
-`endif
-
+`endif // SCENE_MEMORY_SV

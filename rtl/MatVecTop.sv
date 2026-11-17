@@ -14,7 +14,7 @@ module MatVecTop (
 );
     localparam int DATA_W = 18;
     localparam int FRAC_W = 10;
-    localparam int OBJECT_ID_W = 4;
+    localparam int OBJECT_ID_W = 3;
     localparam int STIMULUS_W = 12 * DATA_W;
 
     logic [STIMULUS_W-1:0] stimulus;

@@ -8,7 +8,7 @@
 module ObjectMatrixBuilder #(
     parameter int DATA_W      = 18,
     parameter int FRAC_W      = 10,
-    parameter int OBJECT_ID_W = 4
+    parameter int OBJECT_ID_W = 3
 ) (
     input  logic clk,
     input  logic rst,

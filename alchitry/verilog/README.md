@@ -1,15 +1,11 @@
 # SystemVerilog translation
 
-alchitry_top.sv translates fpgahead/source/alchitry_top.luc.
+The five modules from `fpgahead/luc` are in their corresponding `.sv` files.
+Compile `mig_wrapper.sv` before `ddr_arbiter.sv` and `lru_cache.sv` because it
+defines the shared `memory_pkg` packed structs for the DDR interface.
 
-The five files in fpgahead/luc are all empty (0 bytes). Their corresponding
-.sv files therefore contain comments only, with no invented implementations.
+Both FIFOs use Alchitry's `simple_dual_port_ram` component. The MIG wrapper
+requires the generated Xilinx `mig_7series_0` core.
 
-fpgahead.alp references Alchitry library components for async_fifo, ddr_arbiter,
-fifo, lru_cache, mig_wrapper, and reset_conditioner. Those component sources
-are not included in this project directory. The top module retains its
-reset_conditioner dependency; provide the library module when building.
-The conditioned reset is unused in the original top module.
-
-The original project files have not been modified. No SystemVerilog compiler
-was available on PATH, so compilation has not been verified.
+`alchitry_top.sv` translates `fpgahead/source/alchitry_top.luc` and uses the
+Alchitry `reset_conditioner` component.

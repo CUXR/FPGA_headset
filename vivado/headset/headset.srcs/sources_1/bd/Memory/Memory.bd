@@ -2,12 +2,25 @@
   "design": {
     "design_info": {
       "boundary_crc": "0x0",
+      "device": "xc7a35tftg256-2",
       "gen_directory": "../../../../headset.gen/sources_1/bd/Memory",
       "name": "Memory",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
       "tool_version": "2026.1"
     },
-    "design_tree": {}
+    "design_tree": {
+      "mig_7series_0": ""
+    },
+    "components": {
+      "mig_7series_0": {
+        "vlnv": "xilinx.com:ip:mig_7series:4.2",
+        "ip_revision": "2",
+        "xci_name": "Memory_mig_7series_0_0",
+        "xci_path": "ip\\Memory_mig_7series_0_0\\Memory_mig_7series_0_0.xci",
+        "inst_hier_path": "mig_7series_0",
+        "has_run_ip_tcl": "true"
+      }
+    }
   }
 }

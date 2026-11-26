@@ -424,7 +424,7 @@ module SceneController #(
             completed_objects <= '0;
         end else if (frame_accept) begin
             completed_objects <= '0;
-        end else if ((c_state = C_RUN_FRAME) && i_ea_object_done) begin
+        end else if ((c_state == C_RUN_FRAME) && i_ea_object_done) begin
             completed_objects <= completed_objects + 1'b1;
         end
     end

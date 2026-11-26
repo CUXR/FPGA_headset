@@ -68,6 +68,7 @@ module ViewVertexProcessor #(
     logic                     allow_vertices;
     logic                     forward_vertex_results;
     logic                     update_requested;
+    logic                     update_ready;
     logic                     vertex_stalled;
     logic                     result_accept;
     logic                     PV_valid;
@@ -325,17 +326,19 @@ module ViewVertexProcessor #(
     logic [3:0]  state;
     logic [3:0]  next_state;
 
-
     assign camera_accept = i_camera_valid && o_camera_ready;
     assign object_accept = i_object_valid && o_object_ready;
     assign vertex_accept = i_vertex_valid && o_vertex_ready;
 
     // Requesters hold updates until the drain is complete and ready asserts.
     assign update_requested = i_camera_valid || i_object_valid;
-    assign o_camera_ready = (state == STATE_DRAIN) &&
-                            (outstanding_vertices == 0);
-    assign o_object_ready = (state == STATE_DRAIN) &&
-                            (outstanding_vertices == 0) && PV_valid && !i_camera_valid;
+    assign update_ready = 
+        ((state == STATE_IDLE) || (state == STATE_DRAIN)) &&
+        (outstanding_vertices == 0) &&
+        !vertex_stalled;
+
+    assign o_camera_ready = update_ready;
+    assign o_object_ready = update_ready && PV_valid && !i_camera_valid;
     // Finish an already-presented stalled vertex before stopping admission.
     assign allow_vertices = (state == STATE_IDLE) && PVO_valid &&
                             (!update_requested || vertex_stalled);
@@ -426,7 +429,11 @@ module ViewVertexProcessor #(
                 vector_select = 1'b1;
                 engine_vec_in_valid = allow_vertices && i_vertex_valid;
 
-                if (update_requested && (!vertex_stalled || vertex_accept)) begin
+                if (camera_accept) begin
+                    next_state = STATE_CAMERA_M1;
+                end else if (object_accept) begin
+                    next_state = STATE_OBJECT_M1;
+                end else if (update_requested && (!vertex_stalled || vertex_accept)) begin
                     next_state = STATE_DRAIN;
                 end
             end

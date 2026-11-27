@@ -6,9 +6,22 @@ __pycache__/
 python/output/
 sim/
 
-headset.cache/
-headset.hw/
-headset.ioplanning/
-headset.ip_user_files/
-headset.runs/
-headset.sim/
+# Vivado project: keep only the .xpr
+vivado/project/*
+!vivado/project/*.xpr
+
+# Block designs (one folder per design in vivado/bd/):
+# keep the design, its layout and each IP's settings; Vivado regenerates the rest
+vivado/bd/*/*
+!vivado/bd/*/*.bd
+!vivado/bd/*/*.bda
+!vivado/bd/*/ui/
+!vivado/bd/*/ip/
+vivado/bd/*/ip/*/*
+!vivado/bd/*/ip/*/*.xci
+
+# Vivado scratch files
+.Xil/
+*.jou
+*.log
+*.str

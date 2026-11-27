@@ -4,6 +4,9 @@
 `include "ObjectMatrixBuilder.sv"
 `include "EdgeAssembler.sv"
 
+`ifndef HEADSET_TOP_SV
+`define HEADSET_TOP_SV
+
 `timescale 1ns/1ps
 
 module HeadsetTop #(
@@ -262,3 +265,5 @@ module HeadsetTop #(
     );
 
 endmodule
+
+`endif // HEADSET_TOP_SV

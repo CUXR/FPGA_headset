@@ -25,3 +25,8 @@ vivado/bd/*/ip/*/*
 *.jou
 *.log
 *.str
+
+# Standalone IP (one folder per IP in vivado/ip_config/):
+# keep only each IP's settings file; Vivado regenerates the rest
+vivado/ip_config/*/*
+!vivado/ip_config/*/*.xci
